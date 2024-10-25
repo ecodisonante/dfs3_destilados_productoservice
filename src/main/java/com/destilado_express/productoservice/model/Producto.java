@@ -1,4 +1,4 @@
-package com.ecodisonante.destilado_express.model;
+package com.destilado_express.productoservice.model;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ public class Producto {
     private int precio;
     private int oferta;
     private int stock;
-    private Boolean disponible; // Campo para indicar si está disponible
+    private Boolean disponible; 
 
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;

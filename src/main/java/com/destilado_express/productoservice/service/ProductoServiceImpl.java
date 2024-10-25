@@ -1,21 +1,23 @@
-package com.ecodisonante.destilado_express.service;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.ecodisonante.destilado_express.model.Producto;
-import com.ecodisonante.destilado_express.repository.ProductoRepository;
+package com.destilado_express.productoservice.service;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.destilado_express.productoservice.model.Producto;
+import com.destilado_express.productoservice.repository.ProductoRepository;
 
 @Service
-public class ProductoServiceImpl implements ProductoService{
+public class ProductoServiceImpl implements ProductoService {
 
     @Autowired
     private ProductoRepository productoRepository;
 
     public List<Producto> getAllProductos() {
         return productoRepository.findAll();
+    }
+
+    public List<Producto> getProductosDisponibles() {
+        return productoRepository.findByDisponible(true);
     }
 
     public Producto getProductoById(Long id) {

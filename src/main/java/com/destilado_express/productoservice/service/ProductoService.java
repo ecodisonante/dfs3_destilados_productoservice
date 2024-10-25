@@ -1,11 +1,13 @@
-package com.ecodisonante.destilado_express.service;
+package com.destilado_express.productoservice.service;
 
-import com.ecodisonante.destilado_express.model.Producto;
+import com.destilado_express.productoservice.model.Producto;
 import java.util.List;
 
 public interface ProductoService {
 
     public List<Producto> getAllProductos();
+
+    public List<Producto> getProductosDisponibles();
 
     public Producto getProductoById(Long id);
 
