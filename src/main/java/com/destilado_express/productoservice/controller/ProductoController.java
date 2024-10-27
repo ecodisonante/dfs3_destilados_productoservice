@@ -6,7 +6,16 @@ import com.destilado_express.productoservice.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -18,22 +27,33 @@ public class ProductoController {
     // Obtener todos los productos
     @GetMapping
     public ResponseEntity<List<Producto>> obtenerTodosLosProductos() {
-        List<Producto> productos = productoService.getAllProductos();
-        return new ResponseEntity<>(productos, HttpStatus.OK);
-    }
+        // Obtener correo y rol del usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
 
-    // Obtener todos los productos disponibles
-    @GetMapping("/disponibles")
-    public ResponseEntity<List<Producto>> obtenerProductosDisponibles() {
-        List<Producto> productosDisponibles = productoService.getProductosDisponibles();
-        return new ResponseEntity<>(productosDisponibles, HttpStatus.OK);
+        List<Producto> productos;
+        if (isAdmin) {
+            productos = productoService.getAllProductos();
+        } else {
+            productos = productoService.getProductosDisponibles();
+        }
+
+        return new ResponseEntity<>(productos, HttpStatus.OK);
     }
 
     // Obtener un producto por ID
     @GetMapping("/{id}")
     public ResponseEntity<Producto> obtenerProductoPorId(@PathVariable Long id) {
+        // Obtener correo y rol del usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
         Producto producto = productoService.getProductoById(id);
-        if (producto != null) {
+
+        // Si no esta disponible o el usuario no es ADMIN, retorna not found
+        if (producto != null && (producto.getDisponible() || isAdmin)) {
             return new ResponseEntity<>(producto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
